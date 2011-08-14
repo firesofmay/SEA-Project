@@ -1,0 +1,37 @@
+	http://wiki.eclipse.org/EGit/User_Guide#Github_Tutorial
+	
+	http://www.vogella.de/articles/EGit/article.html
+	
+	note - make sure you own the directory of thr project when pushing it and dont be root
+	also make sure its on linux filesystem, else it just may not work
+
+
+	Configuring the ssh 
+	link - http://www.eclipse.org/forums/index.php?t=msg&goto=648905&S=9bcfa96ab726d744d41a19c7fb02d723#msg_648905
+	note for linux no need to install mysys, use normal bash cmd line	
+	
+	1. Set up the ssh key stuff
+	a. Download and install mysys git according to the github instructions at http://help.github.com/win-git-installation/
+	b. In C:/Users/you/ssh hide any existing keys (id_rsa and id_rsa.pub) in a subdirectory. If the ssh directory does not exist, create it. Of course, "you" is your username as the OS knows you.
+	c. From the start menu, run Git-Bash command shell (a regular DOS command shell will not work).
+	d. In the Git-Bash shell generate an rsa key based on your email (the one you registered at github):
+	ssh-keygen -t rsa -C "you@wherever.com"
+	and enter your pass phrase and confirm when asked.
+	e. The previous step should have created C:/User/you/ssh/id_rsa.pub which you can now open in a text editor and copy. At github, go to account settings, SSH Keys, add a key and paste this in the key box.
+	f. In Git-Bash again (notice the back-ticks in the next line):
+	eval `ssh-agent`
+	ssh-add C:/User/you/ssh/id_rsa
+	ssh git@github.com
+	Here is what you just did: you ran the ssh-agent which is needed by ssh-add. Then you used ssh-add to make note of the location of your key. Then you tried to ssh to git hub. The response to this last command should be that you have successfully authenticated at github but that you don't have shell access. This is just an authentication test. If the authentication was not successful you'll have to sort that out. Try the verbose version: ssh -v git@github.com
+	Assuming this worked....
+	
+	2. In eclipse, configure the remote push
+	a. Window > Show View > Git > Git Repositories will add a repository explorer window.
+	b. In the repository window, select the repository and expand and right-click Remotes and choose Create Remote.
+	c. Copy the github repository URI from the github repository page and paste this in the URI box.
+	d. Select ssh as the protocol but then go back to the URI box and add "git+" at the beginning so it looks like this: git+ssh://git@github.com/UserName/ProjectName.git
+	e. In the Repository Path box, remove the leading slash
+	f. Hit next and cross your fingers. If your get "auth fail" restart eclipse and try step 5 again.
+	g. When you get past the authentication, in the next dialog select "master" for source ref, click "Add all branches spec" and "Finish".
+	
+	Now try a push to github. This worked for me but with all the fiddling around I'm not sure these instructions are perfect....
