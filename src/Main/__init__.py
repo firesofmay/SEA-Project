@@ -13,6 +13,14 @@ import sys
 
 def main():
     
+    print "hello"
+    
+#    for easy input of first link, comment this line incase you are using input directly from the command line
+    sys.argv = raw_input('Enter command line arguments: ').split()
+#    adding a 0th index so that sys.argv functionality behaves normally
+    sys.argv.insert(0, "commands inserted via user input to the program for interactivity")
+    print sys.argv
+    
 #    downloads the link given via command line
     link = download_profile.download_profile(sys.argv[1])
     

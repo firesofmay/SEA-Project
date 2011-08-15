@@ -7,6 +7,7 @@ Created on Aug 14, 2011
 #!/usr/bin/python
 
 import re
+from sys import exit
 
 #pprint is just to print out the list elements in each line for readablity while debugging
 import pprint
@@ -14,7 +15,7 @@ import pprint
 def fetch_Profile_data(file_profile):
 
 
-     
+    profile_data = []
     for line_profile in file_profile.readlines():
 
 #        this is to match the name of the person and store it in name variable
@@ -22,8 +23,9 @@ def fetch_Profile_data(file_profile):
         name_found = regex_for_name.match(line_profile)
     
         if name_found: 
-            name = name_found.group(1)
-    
+            name = name_found.group(1)        
+            profile_data.append(name[:-1])
+        
 #        all friends links are in this pagelet_relationship line, with re match that particular line
         if re.match(r'.*<script>big_pipe.onPageletArrive\(\{"phase":5,"id":"pagelet_relationships".*',line_profile):
             
@@ -37,8 +39,6 @@ def fetch_Profile_data(file_profile):
 #            hence the flag changing alternatively
 #            also name has a " at the end, to skip it i am slicing it till the last character but not including it
             flag = True
-            profile_data = []
-            profile_data.append(name[:-1])
                            
             for friend in friends_link:
                 if flag:
@@ -52,6 +52,13 @@ def fetch_Profile_data(file_profile):
                 else:
                     flag = True
                     
+#        Friend's data not available online
+            
 #    print out the final data - for debugging    
-    pprint.pprint(profile_data)    
-
+    if profile_data:
+        pprint.pprint(profile_data)    
+    else:
+        print "Url has no data Name and Friends. Please Check URL"
+        print "Exiting Program"
+        exit(1)
+        
