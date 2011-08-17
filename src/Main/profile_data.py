@@ -1,18 +1,16 @@
-'''
-Created on Aug 14, 2011
-
-@author: mankaj
-'''
-
-#!/usr/bin/python
-
 import re
 from sys import exit
+import os
 
 #pprint is just to print out the list elements in each line for readablity while debugging
-import pprint
+from pprint import pprint
 
-def fetch_Profile_data(file_profile):
+def fetch_Profile_data(file_profile, file_name):
+    """
+    This module accepts html page and the name of the file to write the data into. It extracts the information given by the user. 
+    Name and friends list available publicly
+    
+    """
 
 
     profile_data = []
@@ -23,16 +21,25 @@ def fetch_Profile_data(file_profile):
         name_found = regex_for_name.match(line_profile)
     
         if name_found: 
-            name = name_found.group(1)        
-            profile_data.append(name[:-1])
+            name = name_found.group(1)
+            print "New file Created - " + file_name
+            profile_data_file = open(file_name, 'w')
+            
+# To ignore the " in the name at the end, slice the name till last character i.e. ignore last character            
+            profile_data_file.write(name[:-1])
+            profile_data_file.write("\n")
+            
         
 #        all friends links are in this pagelet_relationship line, with re match that particular line
         if re.match(r'.*<script>big_pipe.onPageletArrive\(\{"phase":5,"id":"pagelet_relationships".*',line_profile):
             
+
 #            split the line into elements with href=\" as seperator of elements
 #            if that element has first nine 9 characters has http:\/\/\
-#            than take the characters of that element from 9th character upto the first character having " but not including the "
-            friends_link = [  line[ 9 : line.find('"') ] for line in line_profile.split(r'href=\"') if line[:9] == 'http:\/\/']    
+#            than take the characters of that element from 1st character upto the first character having " but not including the "
+#            example value stored as elements in friends_link :
+#            http://www.facebook.com/people/Janak-Bhosale/100000817564826
+            friends_link = [  line[ : line.find('"') ] for line in line_profile.split(r'href=\"') if line[:9] == 'http:\/\/']    
     
     
 #            the list formed has same values twice, to remove those values twice we will take odd values from the list
@@ -49,16 +56,30 @@ def fetch_Profile_data(file_profile):
                     friend = p.sub('', friend)
                     
                     profile_data.append(friend)
+                    profile_data_file.write(friend)
+                    profile_data_file.write("\n")
+
                 else:
                     flag = True
                     
 #        Friend's data not available online
             
 #    print out the final data - for debugging    
-    if profile_data:
-        pprint.pprint(profile_data)    
+    
+    
+    if name:
+#        print "----------New Data--------------"
+#        pprint(profile_data)
+        profile_data_file.close()
+
+            
+#        print "----------X----X----------"
+        
+        return profile_data
+    
     else:
         print "Url has no data Name and Friends. Please Check URL"
         print "Exiting Program"
         exit(1)
+        
         
