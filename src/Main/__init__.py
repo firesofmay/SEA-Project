@@ -25,7 +25,9 @@ def main():
     sys.argv = raw_input('Enter command line arguments: ').split()
 # adding a 0th index so that sys.argv functionality behaves normally
     sys.argv.insert(0, "commands inserted via user input to the program for interactivity")
-        
+
+    if os.path.exists('./data') == False:
+            os.mkdir('./data')
     
 # Initialize the list with the url    
     temp_link_url = [sys.argv[1]]

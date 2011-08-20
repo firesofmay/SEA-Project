@@ -22,7 +22,7 @@ def fetch_Profile_data(file_profile, file_name):
     
         if name_found: 
             name = name_found.group(1)
-            print "New file Created - " + file_name
+            print "New file Created - " + file_name            
             profile_data_file = open(file_name, 'w')
             
 # To ignore the " in the name at the end, slice the name till last character i.e. ignore last character            
