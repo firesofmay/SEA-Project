@@ -30,6 +30,38 @@ def fetch_Profile_data(file_profile, file_name):
             profile_data_file.write("\n")
             
         
+
+
+        if re.match(r'.*<script>big_pipe.onPageletArrive\(\{"phase":5,"id":"pagelet_people_same_name".*',line_profile):
+            
+
+#            split the line into elements with href=\" as seperator of elements
+#            if that element has first nine 9 characters has http:\/\/\
+#            than take the characters of that element from 1st character upto the first character having " but not including the "
+#            example value stored as elements in friends_link :
+#            http://www.facebook.com/people/Janak-Bhosale/100000817564826
+            same_name_link = [  line[ : line.find('"') ] for line in line_profile.split(r'href=\"') if line[:9] == 'http:\/\/']    
+    
+    
+#            the list formed has same values twice, to remove those values twice we will take odd values from the list
+#            hence the flag changing alternatively
+#            also name has a " at the end, to skip it i am slicing it till the last character but not including it
+            flag = True
+                           
+            for person in same_name_link:
+                if flag:
+                    flag = False
+                    
+#                    remove all the \\ found in the links
+                    p = re.compile( r'\\')
+                    person = p.sub('', person)
+                    print "Added Same name person = " + person
+                    profile_data.append(person)
+
+                else:
+                    flag = True
+            
+        
 #        all friends links are in this pagelet_relationship line, with re match that particular line
         if re.match(r'.*<script>big_pipe.onPageletArrive\(\{"phase":5,"id":"pagelet_relationships".*',line_profile):
             
@@ -82,4 +114,6 @@ def fetch_Profile_data(file_profile, file_name):
         print "Exiting Program"
         exit(1)
         
+        
+#def addlink(line_profile, profile_data_file, write_to_file, ):
         

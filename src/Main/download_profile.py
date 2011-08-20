@@ -16,7 +16,7 @@ def download_profile(profile_link):
         
         CHandler = urllib2.HTTPCookieProcessor(cookielib.CookieJar())
         browser = urllib2.build_opener(CHandler)
-        browser.addheaders = [('User-agent', 'InFB - ruel@ruel.me - http://ruel.me')]
+        browser.addheaders = [('User-agent', 'Mozilla/5.0')]
         urllib2.install_opener(browser)
      
         print 'Initializing..'

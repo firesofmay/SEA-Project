@@ -9,11 +9,16 @@ import os
 from profile_data import fetch_Profile_data
 from download_profile import download_profile
 
-# pass this value on command line for testing purpose
+# pass this value for testing purpose
 # http://www.facebook.com/profile.php?id=100000275937818
 
-# Command to check the unique links found - "cat * | sort -u | grep "http" | wc"
+# Command to check the unique links found
+# mankaj #@ cat * | sort -u | grep "http" | wc
 
+# Command to list out people who have friends 
+# mankaj #@ ll | cut -d" " -f7,10 | grep "[0-9][0-9][0-9] "
+
+ 
 def main():
       
 # for easy input of first link, comment these line in case you are using input directly from the command line
@@ -53,13 +58,13 @@ def main():
     
 def create_file_name_from(fetch_link):
         
-# removing all "/" as filename cant have a /
+# to remove all "/" as filename cant have a /
     p = re.compile( r'/')
     
 # adding data files into projects data directory 
     file_name = "./data/"
     
-# appending name
+# subsituting front slash with an underscore character & appending name of the file to the data directory
     file_name += p.sub('_', fetch_link[23:])
     
 # appending extension .fbd (facebook data) to each profile data text
