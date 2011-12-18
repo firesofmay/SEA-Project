@@ -2,6 +2,7 @@
 
 """
 This downloads rohit sir's all friends successfully in a file called list.txt
+it automatically gets the count of friends, and also writes the name of friends to the list.txt
 """
  
 import sys
@@ -12,16 +13,15 @@ import cookielib
 import csv
 import json
 import time
+import getpass
 
 #pprint is just to print out the list elements in each line for readablity while debugging
 from pprint import pprint
  
 def main():
-    # Check the arguments
-    if len(sys.argv) != 3:
-        usage()
-    user = sys.argv[1]
-    passw = sys.argv[2]
+
+    user = raw_input("Login ID: ")
+    passw = getpass.getpass()
  
     # Initialize the needed modules
     CHandler = urllib2.HTTPCookieProcessor(cookielib.CookieJar())
@@ -74,7 +74,7 @@ def main():
 #    res = browser.open('http://m.facebook.com/srivastwa?&access_token=%s' % acct)
     
     # Get friend's ID
-    res = browser.open('https://graph.facebook.com/atul.alex?access_token=%s' % acct)
+    res = browser.open('https://graph.facebook.com/srivastwa?access_token=%s' % acct)
     fres = res.read()
     jdata = json.loads(fres)
   
@@ -88,62 +88,63 @@ def main():
     print "Main profiles id = " + pid
     print "Profile Name = " + pname
     
+    res = browser.open('https://m.facebook.com/srivastwa')
+    data = res.read()
+    reFriends = re.compile(r'All Friends\s\((\d+)\)') # gives the exact count of friends
+    friendscount = reFriends.findall(data)[0]
+    
+    #converting friendscount to integer, and incrementing it by 10 so if its 691 it becomes 701 so that upper
+    #range hits the value to 700 and we get all 691 friends
+    friendscount = int(friendscount)
+    
+    print "Number of Friends = " + str(friendscount)
+    
+    if friendscount % 10 != 0:
+        friendscount += 10
+    
     listtxt = open('list.txt', 'w')
     data_list = []        
     
-    for val in range(0,530,10):
+    for val in range(0,friendscount,10):
+        print "inside val for loop, val = %s" + str(val)
 
         res = browser.open('http://m.facebook.com/friends/?id=%s&f=%s&refid=5&access_token=%s' % (pid, val, acct) )
         
         #time.sleep(5)                  
         #final data list
-        
+        for line in res.readlines():
+                print "inside line for loop"
 
-        for line_profile in res.readlines():
-            print str(val) + "\n"
+                m = re.search("Add Friend", line)
             
-            try:
-                if re.match(r'.*<div class="c">.*',line_profile):        
+                if m:
+                    print "m found"
+                    nameit = re.compile(u'name="[^>_=]+"><span>([^>_=]+)</span>')
+                    n = nameit.findall(line)
+                    print n
+                    n.reverse()
                     
-                    list = line_profile.split('<div class="c"><a href=')
-                    
-                    #pprint (list)
-
-                    for item in list[1:]:
-                        #matching ids without username
-                        m = re.findall(r"profile.php\?id=(.\d+)", item)
-
-                        if m:
-                            print m[0]
-                            data_list.append(m[0])
-                            listtxt.write(m[0])
+                    matchit = re.compile(r'<div class="c"><a href=".profile.php\?id=([\d]+)|<div class="c"><a href=".([^?]+)')
+                    l = matchit.findall(line)
+                    print l
+                    for (a,b) in l:
+                        name = n.pop()
+                        
+                        if a:
+                            listtxt.write(a + "," + name)
                             listtxt.write("\n")
 
+                            print "Userid = " + a + " \t\t and Name = " + name
                         else:
-                            #matching ids with username
-                            n = re.findall(r"/([a-zA-Z0-9\.\_]+)\?", item)
-
-                            if n: 
-                                print n[0]
-                                data_list.append(n[0])
-                                listtxt.write(n[0])
-                                listtxt.write("\n")
-
-            except:
-                print "!!!!!!!!Error at = " + str(val) + "\n"
-                pass
-
+                            listtxt.write(b + "," + name)
+                            listtxt.write("\n")
+                            print "Userid = " + b + " \t\t and Name = " + name
+                            
+ 
     print "Done All Friends"
     listtxt.close
 
 
-def usage():
-    '''
-        Usage: infb.py user@domain.tld password
-    '''
-    print 'Usage: ' + sys.argv[0] + ' user@domain.tld password'
-    sys.exit(1)
- 
 if __name__ == '__main__':
     main()
 
